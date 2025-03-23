@@ -21,9 +21,11 @@ import { UserCircle, Plus, X, CalendarClock, FilePlus2, Activity, AlertTriangle 
 import { motion } from 'framer-motion';
 import { getSeverityBgColor, getSeverityColor } from '@/utils/symptomCheckerData';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const PatientProfile = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState("profile");
   const [profile, setProfile] = useState<PatientProfileType | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -50,16 +52,17 @@ const PatientProfile = () => {
     if (savedProfile) {
       setProfile(savedProfile);
       setName(savedProfile.name);
-      setAge(savedProfile.age.toString());
-      setGender(savedProfile.gender);
+      // Fix: Check if age is null/undefined before toString()
+      setAge(savedProfile.age != null ? savedProfile.age.toString() : '');
+      setGender(savedProfile.gender || '');
       setBloodType(savedProfile.bloodType || '');
       setAllergies(savedProfile.allergies || []);
       setChronicConditions(savedProfile.chronicConditions || []);
       setMedications(savedProfile.medications || []);
       if (savedProfile.emergencyContact) {
-        setEmergencyContactName(savedProfile.emergencyContact.name);
-        setEmergencyContactRelationship(savedProfile.emergencyContact.relationship);
-        setEmergencyContactPhone(savedProfile.emergencyContact.phone);
+        setEmergencyContactName(savedProfile.emergencyContact.name || '');
+        setEmergencyContactRelationship(savedProfile.emergencyContact.relationship || '');
+        setEmergencyContactPhone(savedProfile.emergencyContact.phone || '');
       }
     } else {
       // If no profile exists, go to edit mode
@@ -142,14 +145,15 @@ const PatientProfile = () => {
   return (
     <Layout>
       <AnimatedPage>
-        <div className="py-8">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold">Health Profile</h1>
+        <div className="py-4 sm:py-8 px-2 sm:px-0">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-8 gap-2">
+            <h1 className="text-2xl sm:text-3xl font-bold">Health Profile</h1>
             
             {!isEditing && profile && (
               <Button 
                 variant="outline" 
                 onClick={() => setIsEditing(true)}
+                className="w-full sm:w-auto"
               >
                 Edit Profile
               </Button>
@@ -159,30 +163,30 @@ const PatientProfile = () => {
           <Tabs 
             value={activeTab} 
             onValueChange={setActiveTab}
-            className="space-y-6"
+            className="space-y-4 sm:space-y-6"
           >
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="profile">Profile</TabsTrigger>
               <TabsTrigger value="history">Health History</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="profile" className="space-y-6">
+            <TabsContent value="profile" className="space-y-4 sm:space-y-6">
               {isEditing ? (
                 <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
+                  <CardHeader className="pb-2 sm:pb-4">
+                    <CardTitle className="flex items-center text-xl sm:text-2xl">
                       <UserCircle className="mr-2 h-5 w-5 text-health-primary" />
                       Edit Health Profile
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-6">
+                  <CardContent className="space-y-4 sm:space-y-6 px-3 sm:px-6">
                     <SlideUp className="space-y-4">
                       {/* Basic Information */}
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-medium">Basic Information</h3>
+                      <div className="space-y-3 sm:space-y-4">
+                        <h3 className="text-base sm:text-lg font-medium">Basic Information</h3>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                          <div className="space-y-1 sm:space-y-2">
                             <Label htmlFor="name">Full Name *</Label>
                             <Input 
                               id="name" 
@@ -193,7 +197,7 @@ const PatientProfile = () => {
                             />
                           </div>
                           
-                          <div className="space-y-2">
+                          <div className="space-y-1 sm:space-y-2">
                             <Label htmlFor="age">Age *</Label>
                             <Input 
                               id="age" 
@@ -206,8 +210,8 @@ const PatientProfile = () => {
                           </div>
                         </div>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                          <div className="space-y-1 sm:space-y-2">
                             <Label htmlFor="gender">Gender *</Label>
                             <Select 
                               value={gender} 
@@ -225,14 +229,14 @@ const PatientProfile = () => {
                             </Select>
                           </div>
                           
-                          <div className="space-y-2">
+                          <div className="space-y-1 sm:space-y-2">
                             <Label htmlFor="bloodType">Blood Type</Label>
                             <Select 
                               value={bloodType} 
                               onValueChange={setBloodType}
                             >
                               <SelectTrigger id="bloodType">
-                                <SelectValue placeholder="Select blood type (if known)" />
+                                <SelectValue placeholder={isMobile ? "Select blood type" : "Select blood type (if known)"} />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="A+">A+</SelectItem>
@@ -251,21 +255,21 @@ const PatientProfile = () => {
                       </div>
 
                       {/* Medical Information */}
-                      <div className="space-y-4 pt-4 border-t">
-                        <h3 className="text-lg font-medium">Medical Information</h3>
+                      <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4 border-t">
+                        <h3 className="text-base sm:text-lg font-medium">Medical Information</h3>
                         
                         {/* Allergies */}
-                        <div className="space-y-2">
+                        <div className="space-y-1 sm:space-y-2">
                           <Label>Allergies</Label>
                           <div className="flex flex-wrap gap-2 mb-2">
                             {allergies.map(allergy => (
                               <div 
                                 key={allergy} 
-                                className="flex items-center bg-muted px-3 py-1 rounded-full text-sm"
+                                className="flex items-center bg-muted px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm"
                               >
                                 <span>{allergy}</span>
                                 <X 
-                                  className="ml-2 h-3 w-3 cursor-pointer text-muted-foreground hover:text-foreground" 
+                                  className="ml-1 sm:ml-2 h-3 w-3 cursor-pointer text-muted-foreground hover:text-foreground" 
                                   onClick={() => handleRemoveItem(allergies, setAllergies, allergy)}
                                 />
                               </div>
@@ -295,17 +299,17 @@ const PatientProfile = () => {
                         </div>
                         
                         {/* Chronic Conditions */}
-                        <div className="space-y-2">
+                        <div className="space-y-1 sm:space-y-2">
                           <Label>Chronic Conditions</Label>
                           <div className="flex flex-wrap gap-2 mb-2">
                             {chronicConditions.map(condition => (
                               <div 
                                 key={condition} 
-                                className="flex items-center bg-muted px-3 py-1 rounded-full text-sm"
+                                className="flex items-center bg-muted px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm"
                               >
                                 <span>{condition}</span>
                                 <X 
-                                  className="ml-2 h-3 w-3 cursor-pointer text-muted-foreground hover:text-foreground" 
+                                  className="ml-1 sm:ml-2 h-3 w-3 cursor-pointer text-muted-foreground hover:text-foreground" 
                                   onClick={() => handleRemoveItem(chronicConditions, setChronicConditions, condition)}
                                 />
                               </div>
@@ -335,17 +339,17 @@ const PatientProfile = () => {
                         </div>
                         
                         {/* Medications */}
-                        <div className="space-y-2">
+                        <div className="space-y-1 sm:space-y-2">
                           <Label>Current Medications</Label>
                           <div className="flex flex-wrap gap-2 mb-2">
                             {medications.map(medication => (
                               <div 
                                 key={medication} 
-                                className="flex items-center bg-muted px-3 py-1 rounded-full text-sm"
+                                className="flex items-center bg-muted px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm"
                               >
                                 <span>{medication}</span>
                                 <X 
-                                  className="ml-2 h-3 w-3 cursor-pointer text-muted-foreground hover:text-foreground" 
+                                  className="ml-1 sm:ml-2 h-3 w-3 cursor-pointer text-muted-foreground hover:text-foreground" 
                                   onClick={() => handleRemoveItem(medications, setMedications, medication)}
                                 />
                               </div>
@@ -376,11 +380,11 @@ const PatientProfile = () => {
                       </div>
 
                       {/* Emergency Contact */}
-                      <div className="space-y-4 pt-4 border-t">
-                        <h3 className="text-lg font-medium">Emergency Contact</h3>
+                      <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4 border-t">
+                        <h3 className="text-base sm:text-lg font-medium">Emergency Contact</h3>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="space-y-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+                          <div className="space-y-1 sm:space-y-2">
                             <Label htmlFor="emergencyName">Contact Name</Label>
                             <Input 
                               id="emergencyName" 
@@ -390,7 +394,7 @@ const PatientProfile = () => {
                             />
                           </div>
                           
-                          <div className="space-y-2">
+                          <div className="space-y-1 sm:space-y-2">
                             <Label htmlFor="emergencyRelationship">Relationship</Label>
                             <Input 
                               id="emergencyRelationship" 
@@ -400,7 +404,7 @@ const PatientProfile = () => {
                             />
                           </div>
                           
-                          <div className="space-y-2">
+                          <div className="space-y-1 sm:space-y-2">
                             <Label htmlFor="emergencyPhone">Phone Number</Label>
                             <Input 
                               id="emergencyPhone" 
@@ -412,7 +416,7 @@ const PatientProfile = () => {
                         </div>
                       </div>
 
-                      <div className="pt-4 flex justify-end gap-2">
+                      <div className="pt-4 flex flex-col sm:flex-row justify-end gap-2">
                         {profile && (
                           <Button 
                             variant="outline" 
@@ -434,11 +438,15 @@ const PatientProfile = () => {
                                 }
                               }
                             }}
+                            className="w-full sm:w-auto order-2 sm:order-1"
                           >
                             Cancel
                           </Button>
                         )}
-                        <Button onClick={handleSaveProfile}>
+                        <Button 
+                          onClick={handleSaveProfile} 
+                          className="w-full sm:w-auto order-1 sm:order-2"
+                        >
                           Save Profile
                         </Button>
                       </div>
@@ -454,99 +462,99 @@ const PatientProfile = () => {
                       transition={{ duration: 0.4 }}
                     >
                       <Card>
-                        <CardHeader>
-                          <CardTitle className="flex items-center justify-between">
-                            <div className="flex items-center">
+                        <CardHeader className="pb-2 sm:pb-4">
+                          <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between text-xl sm:text-2xl">
+                            <div className="flex items-center mb-2 sm:mb-0">
                               <UserCircle className="mr-2 h-5 w-5 text-health-primary" />
                               Health Profile
                             </div>
-                            <div className="text-sm font-normal text-muted-foreground flex items-center">
-                              <CalendarClock className="h-4 w-4 mr-1" />
+                            <div className="text-xs sm:text-sm font-normal text-muted-foreground flex items-center">
+                              <CalendarClock className="h-3 sm:h-4 w-3 sm:w-4 mr-1" />
                               Last updated: {formatDate(profile.lastUpdated)}
                             </div>
                           </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-6">
+                        <CardContent className="space-y-4 sm:space-y-6 px-3 sm:px-6">
                           {/* Basic Information */}
-                          <div className="space-y-4">
-                            <h3 className="text-lg font-medium">Basic Information</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-3 sm:space-y-4">
+                            <h3 className="text-base sm:text-lg font-medium">Basic Information</h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                               <div className="space-y-1">
-                                <p className="text-sm text-muted-foreground">Full Name</p>
+                                <p className="text-xs sm:text-sm text-muted-foreground">Full Name</p>
                                 <p className="font-medium">{profile.name}</p>
                               </div>
                               <div className="space-y-1">
-                                <p className="text-sm text-muted-foreground">Age</p>
+                                <p className="text-xs sm:text-sm text-muted-foreground">Age</p>
                                 <p className="font-medium">{profile.age} years</p>
                               </div>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                               <div className="space-y-1">
-                                <p className="text-sm text-muted-foreground">Gender</p>
+                                <p className="text-xs sm:text-sm text-muted-foreground">Gender</p>
                                 <p className="font-medium capitalize">{profile.gender}</p>
                               </div>
                               <div className="space-y-1">
-                                <p className="text-sm text-muted-foreground">Blood Type</p>
+                                <p className="text-xs sm:text-sm text-muted-foreground">Blood Type</p>
                                 <p className="font-medium">{profile.bloodType || 'Not specified'}</p>
                               </div>
                             </div>
                           </div>
 
                           {/* Medical Information */}
-                          <div className="space-y-4 pt-4 border-t">
-                            <h3 className="text-lg font-medium">Medical Information</h3>
+                          <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4 border-t">
+                            <h3 className="text-base sm:text-lg font-medium">Medical Information</h3>
                             
                             <div className="space-y-3">
                               <div className="space-y-1">
-                                <p className="text-sm text-muted-foreground">Allergies</p>
+                                <p className="text-xs sm:text-sm text-muted-foreground">Allergies</p>
                                 <div className="flex flex-wrap gap-2">
                                   {profile.allergies.length > 0 ? (
                                     profile.allergies.map(allergy => (
                                       <div 
                                         key={allergy} 
-                                        className="bg-muted px-3 py-1 rounded-full text-sm"
+                                        className="bg-muted px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm"
                                       >
                                         {allergy}
                                       </div>
                                     ))
                                   ) : (
-                                    <p className="text-muted-foreground italic">No allergies recorded</p>
+                                    <p className="text-xs sm:text-sm text-muted-foreground italic">No allergies recorded</p>
                                   )}
                                 </div>
                               </div>
                               
                               <div className="space-y-1">
-                                <p className="text-sm text-muted-foreground">Chronic Conditions</p>
+                                <p className="text-xs sm:text-sm text-muted-foreground">Chronic Conditions</p>
                                 <div className="flex flex-wrap gap-2">
                                   {profile.chronicConditions.length > 0 ? (
                                     profile.chronicConditions.map(condition => (
                                       <div 
                                         key={condition} 
-                                        className="bg-muted px-3 py-1 rounded-full text-sm"
+                                        className="bg-muted px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm"
                                       >
                                         {condition}
                                       </div>
                                     ))
                                   ) : (
-                                    <p className="text-muted-foreground italic">No chronic conditions recorded</p>
+                                    <p className="text-xs sm:text-sm text-muted-foreground italic">No chronic conditions recorded</p>
                                   )}
                                 </div>
                               </div>
                               
                               <div className="space-y-1">
-                                <p className="text-sm text-muted-foreground">Current Medications</p>
+                                <p className="text-xs sm:text-sm text-muted-foreground">Current Medications</p>
                                 <div className="flex flex-wrap gap-2">
                                   {profile.medications.length > 0 ? (
                                     profile.medications.map(medication => (
                                       <div 
                                         key={medication} 
-                                        className="bg-muted px-3 py-1 rounded-full text-sm"
+                                        className="bg-muted px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm"
                                       >
                                         {medication}
                                       </div>
                                     ))
                                   ) : (
-                                    <p className="text-muted-foreground italic">No medications recorded</p>
+                                    <p className="text-xs sm:text-sm text-muted-foreground italic">No medications recorded</p>
                                   )}
                                 </div>
                               </div>
@@ -554,26 +562,26 @@ const PatientProfile = () => {
                           </div>
 
                           {/* Emergency Contact */}
-                          <div className="space-y-4 pt-4 border-t">
-                            <h3 className="text-lg font-medium">Emergency Contact</h3>
+                          <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4 border-t">
+                            <h3 className="text-base sm:text-lg font-medium">Emergency Contact</h3>
                             
                             {profile.emergencyContact ? (
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                                 <div className="space-y-1">
-                                  <p className="text-sm text-muted-foreground">Contact Name</p>
+                                  <p className="text-xs sm:text-sm text-muted-foreground">Contact Name</p>
                                   <p className="font-medium">{profile.emergencyContact.name}</p>
                                 </div>
                                 <div className="space-y-1">
-                                  <p className="text-sm text-muted-foreground">Relationship</p>
+                                  <p className="text-xs sm:text-sm text-muted-foreground">Relationship</p>
                                   <p className="font-medium">{profile.emergencyContact.relationship}</p>
                                 </div>
                                 <div className="space-y-1">
-                                  <p className="text-sm text-muted-foreground">Phone Number</p>
+                                  <p className="text-xs sm:text-sm text-muted-foreground">Phone Number</p>
                                   <p className="font-medium">{profile.emergencyContact.phone}</p>
                                 </div>
                               </div>
                             ) : (
-                              <p className="text-muted-foreground italic">No emergency contact recorded</p>
+                              <p className="text-xs sm:text-sm text-muted-foreground italic">No emergency contact recorded</p>
                             )}
                           </div>
                         </CardContent>
@@ -581,13 +589,16 @@ const PatientProfile = () => {
                     </motion.div>
                   ) : (
                     <Card>
-                      <CardContent className="pt-6 flex flex-col items-center justify-center py-12">
-                        <UserCircle className="h-16 w-16 text-muted-foreground mb-4" />
-                        <h3 className="text-xl font-medium mb-2">No Health Profile Found</h3>
-                        <p className="text-muted-foreground mb-6 text-center max-w-md">
+                      <CardContent className="pt-6 flex flex-col items-center justify-center py-10 sm:py-12">
+                        <UserCircle className="h-12 sm:h-16 w-12 sm:w-16 text-muted-foreground mb-4" />
+                        <h3 className="text-lg sm:text-xl font-medium mb-2">No Health Profile Found</h3>
+                        <p className="text-sm text-muted-foreground mb-6 text-center max-w-md px-2">
                           Create a health profile to keep track of your medical information and help healthcare providers better understand your health needs.
                         </p>
-                        <Button onClick={() => setIsEditing(true)}>
+                        <Button 
+                          onClick={() => setIsEditing(true)}
+                          className="w-full sm:w-auto"
+                        >
                           Create Health Profile
                         </Button>
                       </CardContent>
@@ -599,9 +610,9 @@ const PatientProfile = () => {
             
             <TabsContent value="history">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center">
+                <CardHeader className="pb-2 sm:pb-4">
+                  <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between text-xl sm:text-2xl">
+                    <div className="flex items-center mb-2 sm:mb-0">
                       <Activity className="mr-2 h-5 w-5 text-health-primary" />
                       Health History
                     </div>
@@ -609,16 +620,16 @@ const PatientProfile = () => {
                       variant="outline" 
                       size="sm"
                       onClick={() => navigate('/symptom-checker')}
-                      className="flex items-center"
+                      className="flex items-center w-full sm:w-auto"
                     >
                       <FilePlus2 className="mr-2 h-4 w-4" />
                       New Assessment
                     </Button>
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-2 sm:px-6">
                   {symptomHistory.length > 0 ? (
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {symptomHistory.map((result, index) => (
                         <motion.div 
                           key={result.id}
@@ -635,25 +646,25 @@ const PatientProfile = () => {
                               result.severity === 'severe' ? "bg-red-500" : 
                               result.severity === 'moderate' ? "bg-amber-500" : "bg-green-500"
                             )} />
-                            <CardContent className="pt-4">
-                              <div className="flex flex-col md:flex-row justify-between md:items-center mb-4">
-                                <div className="flex items-center mb-2 md:mb-0">
+                            <CardContent className="pt-3 sm:pt-4 px-3 sm:px-6">
+                              <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-3 sm:mb-4">
+                                <div className="flex items-center mb-2 sm:mb-0">
                                   <AlertTriangle className={cn(
-                                    "h-5 w-5 mr-2",
+                                    "h-4 sm:h-5 w-4 sm:w-5 mr-2",
                                     getSeverityColor(result.severity)
                                   )} />
-                                  <h3 className="font-medium">
+                                  <h3 className="text-sm sm:text-base font-medium">
                                     Symptom Assessment
                                   </h3>
                                 </div>
-                                <div className="text-sm text-muted-foreground">
+                                <div className="text-xs sm:text-sm text-muted-foreground">
                                   {formatDate(result.timestamp)}
                                 </div>
                               </div>
                               
                               {/* Severity indicator */}
                               <div className={cn(
-                                "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mb-3",
+                                "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mb-2 sm:mb-3",
                                 result.severity === 'severe' ? "bg-red-100 text-red-800" : 
                                 result.severity === 'moderate' ? "bg-amber-100 text-amber-800" : "bg-green-100 text-green-800"
                               )}>
@@ -661,21 +672,21 @@ const PatientProfile = () => {
                                  result.severity === 'moderate' ? 'Moderate' : 'Mild'}
                               </div>
                               
-                              <div className="space-y-3">
+                              <div className="space-y-2 sm:space-y-3">
                                 <div className="space-y-1">
-                                  <p className="text-sm text-muted-foreground">Recommendation</p>
-                                  <p className="text-sm">{result.recommendation}</p>
+                                  <p className="text-xs sm:text-sm text-muted-foreground">Recommendation</p>
+                                  <p className="text-xs sm:text-sm">{result.recommendation}</p>
                                 </div>
                                 
                                 {result.notes && (
                                   <div className="space-y-1">
-                                    <p className="text-sm text-muted-foreground">Notes</p>
-                                    <p className="text-sm italic">{result.notes}</p>
+                                    <p className="text-xs sm:text-sm text-muted-foreground">Notes</p>
+                                    <p className="text-xs sm:text-sm italic">{result.notes}</p>
                                   </div>
                                 )}
                                 
                                 {result.followUpRequired && (
-                                  <div className="bg-amber-100 text-amber-800 p-3 rounded-md text-sm mt-2">
+                                  <div className="bg-amber-100 text-amber-800 p-2 sm:p-3 rounded-md text-xs sm:text-sm mt-2">
                                     <span className="font-semibold">Follow-up required:</span> This assessment recommended a follow-up with a healthcare provider.
                                   </div>
                                 )}
@@ -686,13 +697,16 @@ const PatientProfile = () => {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-12">
-                      <Activity className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <h3 className="text-xl font-medium mb-2">No Health Records Found</h3>
-                      <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                    <div className="text-center py-10 sm:py-12">
+                      <Activity className="h-10 sm:h-12 w-10 sm:w-12 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg sm:text-xl font-medium mb-2">No Health Records Found</h3>
+                      <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto px-2">
                         Use the Symptom Checker to assess your symptoms and save the results to your health record.
                       </p>
-                      <Button onClick={() => navigate('/symptom-checker')}>
+                      <Button 
+                        onClick={() => navigate('/symptom-checker')}
+                        className="w-full sm:w-auto"
+                      >
                         Start Symptom Check
                       </Button>
                     </div>

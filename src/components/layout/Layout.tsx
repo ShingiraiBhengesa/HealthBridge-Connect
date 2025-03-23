@@ -1,34 +1,23 @@
 
-import { ReactNode } from 'react';
-import { AnimatePresence } from 'framer-motion';
-import { Header } from '@/components/layout/Header';
-import { cn } from '@/lib/utils';
+import React from 'react';
+import { Header } from './Header';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface LayoutProps {
-  children: ReactNode;
-  className?: string;
-  fullWidth?: boolean;
-  withoutHeader?: boolean;
+  children: React.ReactNode;
 }
 
-export function Layout({ 
-  children, 
-  className, 
-  fullWidth = false,
-  withoutHeader = false 
-}: LayoutProps) {
+export const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const isMobile = useIsMobile();
+  
   return (
-    <div className="min-h-screen flex flex-col">
-      {!withoutHeader && <Header />}
-      <main className={cn(
-        "flex-1 pt-20", // Add padding-top to account for fixed header
-        !fullWidth && "px-4 md:container",
-        className
-      )}>
-        <AnimatePresence mode="wait">
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className={`flex-1 ${isMobile ? 'pt-14' : 'pt-16 sm:pt-20'}`}>
+        <div className="container mx-auto px-2 sm:px-4 md:px-6 max-w-full">
           {children}
-        </AnimatePresence>
+        </div>
       </main>
     </div>
   );
-}
+};

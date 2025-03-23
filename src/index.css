@@ -124,6 +124,49 @@
   .text-balance {
     text-wrap: balance;
   }
+  
+  /* Responsive container classes */
+  .container-sm {
+    @apply w-full px-4 mx-auto max-w-screen-sm;
+  }
+  
+  .container-md {
+    @apply w-full px-4 mx-auto max-w-screen-md;
+  }
+  
+  .container-lg {
+    @apply w-full px-4 mx-auto max-w-screen-lg;
+  }
+  
+  .container-xl {
+    @apply w-full px-4 mx-auto max-w-screen-xl;
+  }
+  
+  /* Dashboard card utilities */
+  .dashboard-card {
+    @apply bg-card border border-border rounded-lg overflow-hidden transition-all duration-200;
+  }
+  
+  .dashboard-card-header {
+    @apply p-4 sm:p-6 border-b border-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2;
+  }
+  
+  .dashboard-card-content {
+    @apply p-4 sm:p-6;
+  }
+  
+  /* Mobile optimized spacing */
+  .mobile-spacing {
+    @apply p-2 sm:p-4 md:p-6;
+  }
+  
+  .mobile-text {
+    @apply text-sm sm:text-base;
+  }
+  
+  .mobile-heading {
+    @apply text-lg sm:text-xl md:text-2xl font-semibold;
+  }
 }
 
 /* Page transition animations */
@@ -146,4 +189,37 @@
   opacity: 0;
   transform: translateY(-8px);
   transition: opacity 300ms, transform 300ms;
+}
+
+/* Mobile responsive layout adjustments */
+@media (max-width: 640px) {
+  .card {
+    @apply rounded-md border-0 shadow-sm;
+  }
+  
+  .card-header {
+    @apply pb-2;
+  }
+  
+  .card-content {
+    @apply p-3;
+  }
+  
+  /* Smaller font size for mobile */
+  h1 {
+    @apply text-2xl;
+  }
+  
+  h2 {
+    @apply text-xl;
+  }
+  
+  h3 {
+    @apply text-lg;
+  }
+  
+  /* Adjust padding for sections */
+  section {
+    @apply py-8;
+  }
 }
