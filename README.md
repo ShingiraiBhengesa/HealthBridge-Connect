@@ -39,7 +39,6 @@ Our symptom checker works entirely offline once downloaded, allowing users to ch
 - Regularly updated with the latest medical guidelines
 - Supports multiple languages and accessibility features
 
-![Symptom Checker Screenshot](https://placeholder.com/add-your-symptom-checker-screenshot-here)
 
 ### 2. Secure Health Records
 
@@ -51,7 +50,6 @@ Store your medical information locally with strong encryption, with data syncing
 - Chronological health timeline with all events and records
 - Storage for lab results, prescriptions, and vaccination records
 
-![Health Records Screenshot](https://placeholder.com/add-your-health-records-screenshot-here)
 
 ### 3. Low-Bandwidth Telemedicine
 
@@ -63,7 +61,6 @@ Connect with healthcare professionals even with limited connectivity via text, v
 - Appointment scheduling and reminders
 - Secure end-to-end encrypted communications
 
-![Telemedicine Screenshot](https://placeholder.com/add-your-telemedicine-screenshot-here)
 
 ### 4. Community Health Worker Toolkit
 
@@ -75,7 +72,6 @@ Specialized tools for health workers to monitor and care for patients in underse
 - Data collection and reporting tools
 - Referral management system
 
-![Health Worker Toolkit Screenshot](https://placeholder.com/add-your-health-worker-screenshot-here)
 
 ### 5. Additional Features
 
