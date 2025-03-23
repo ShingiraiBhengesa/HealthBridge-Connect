@@ -3,7 +3,7 @@
 
 HealthBridge Connect is a comprehensive healthcare platform designed to bridge the gap in healthcare access worldwide. Our offline-first application ensures that quality healthcare is accessible to everyone, everywhere - even in areas with limited internet connectivity or resources.
 
-![Alt text](images/example.png)
+![Alt text](image1.png)
 
 
 ## Run this Locally
